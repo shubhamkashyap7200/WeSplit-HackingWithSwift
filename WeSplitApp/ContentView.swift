@@ -15,8 +15,9 @@ struct ContentView: View {
     @FocusState private var amountIsFocused: Bool
     
     let tipPercentages = [5, 10, 15, 20, 25, 0]
+    let currentCurrency: String = Locale.current.currency?.identifier ?? "USD"
     
-    private var totalFinalAmountToPay: Double {
+    private var totalFinalAmountToPayPerPerson: Double {
         // Total amount to pay
         let peopleCount = Double(selectedNumberOfPeople + 2)
         let tipSelection = Double(selectedTipPercentage)
@@ -27,13 +28,24 @@ struct ContentView: View {
         return amountPerPerson
     }
     
+    private var totalFinalAmountToPay: Double {
+        // Total amount to pay
+        let peopleCount = Double(selectedNumberOfPeople + 2)
+        let tipSelection = Double(selectedTipPercentage)
+        let tipValue = (totalAmountEnteredByUser / 100) * tipSelection
+        let grandTotal = totalAmountEnteredByUser + tipValue
+        
+        return grandTotal
+    }
+
+    
     var body: some View {
         NavigationStack {
             Form {
                 
                 // Section - 1 - Enter the amount and number of people
                 Section {
-                    TextField("Enter the amount to split", value: $totalAmountEnteredByUser, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    TextField("Enter the amount to split", value: $totalAmountEnteredByUser, format: .currency(code: currentCurrency))
                         .keyboardType(.decimalPad)
                         .focused($amountIsFocused)
                     
@@ -57,16 +69,25 @@ struct ContentView: View {
                     Text("Select the tip percentage")
                 }
                 
+                Section {
+                    Text(totalFinalAmountToPay, format: .currency(code: currentCurrency))
+                } header: {
+                    Text("Total amount")
+                }
+                
                 
                 // Section - 3 - Final Output
                 Section {
-                    Text(totalFinalAmountToPay, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    Text(totalFinalAmountToPayPerPerson, format: .currency(code: currentCurrency))
                 } header: {
-                    Text("Total Amount to pay")
+                    Text("Amount Per Person")
                 }
             }
             
             .navigationTitle("We Split App")
+            .toolbar {
+                
+            }
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
