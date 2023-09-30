@@ -17,16 +17,6 @@ struct ContentView: View {
     let tipPercentages = [5, 10, 15, 20, 25, 0]
     let currentCurrency: String = Locale.current.currency?.identifier ?? "USD"
     
-    private var totalFinalAmountToPayPerPerson: Double {
-        // Total amount to pay
-        let peopleCount = Double(selectedNumberOfPeople + 2)
-        let tipSelection = Double(selectedTipPercentage)
-        let tipValue = (totalAmountEnteredByUser / 100) * tipSelection
-        let grandTotal = totalAmountEnteredByUser + tipValue
-        let amountPerPerson = grandTotal / peopleCount
-        
-        return amountPerPerson
-    }
     
     private var totalFinalAmountToPay: Double {
         // Total amount to pay
@@ -38,6 +28,16 @@ struct ContentView: View {
         return grandTotal
     }
 
+    private var totalFinalAmountToPayPerPerson: Double {
+        // Total amount to pay
+        let peopleCount = Double(selectedNumberOfPeople + 2)
+        let tipSelection = Double(selectedTipPercentage)
+        let tipValue = (totalAmountEnteredByUser / 100) * tipSelection
+        let grandTotal = totalAmountEnteredByUser + tipValue
+        let amountPerPerson = grandTotal / peopleCount
+        
+        return amountPerPerson
+    }
     
     var body: some View {
         NavigationStack {
@@ -71,6 +71,7 @@ struct ContentView: View {
                 
                 Section {
                     Text(totalFinalAmountToPay, format: .currency(code: currentCurrency))
+                        .foregroundStyle((selectedTipPercentage == 0) ? Color.red : Color.primary)
                 } header: {
                     Text("Total amount")
                 }
